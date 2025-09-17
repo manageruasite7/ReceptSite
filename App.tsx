@@ -168,7 +168,7 @@ export default function App() {
         setGeneratedRecipe(null);
         
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+            const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY as string });
 
             const schema = {
               type: Type.OBJECT,
