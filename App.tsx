@@ -20,6 +20,7 @@ const constants = {
       occasionLabel: 'Особый случай',
       generateButton: 'Сгенерировать рецепт',
       generating: 'Создаем шедевр...',
+	  errorOverloaded: 'Серверы Google перегружены. Пожалуйста, попробуйте сгенерировать рецепт чуть позже.',
       errorOccurred: 'Произошла ошибка. Попробуйте изменить запрос.',
       loadingMessages: [
         'Разогреваем духовку...',
@@ -50,6 +51,7 @@ const constants = {
       occasionLabel: 'Особливий випадок',
       generateButton: 'Згенерувати рецепт',
       generating: 'Створюємо шедевр...',
+	  errorOverloaded: 'Сервери Google перевантажені. Будь ласка, спробуйте згенерувати рецепт трохи пізніше.',
       errorOccurred: 'Сталася помилка. Спробуйте змінити запит.',
       loadingMessages: [
         'Розігріваємо духовку...',
@@ -220,7 +222,12 @@ export default function App() {
 			
         } catch (err) {
             console.error(err);
-            setError(t.errorOccurred);
+            // Проверяем, содержит ли текст ошибки слово "overloaded"
+            if (String(err).includes('overloaded')) {
+                setError(t.errorOverloaded); // Показываем нашу новую, кастомную ошибку
+            } else {
+                setError(t.errorOccurred); // Для всех других проблем показываем стандартную ошибку
+            }
         } finally {
             setIsLoading(false);
         }
