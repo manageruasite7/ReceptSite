@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
+import html2canvas from 'html2canvas';
 
 // --- DATA & TRANSLATIONS ---
 const constants = {
@@ -229,36 +230,37 @@ export default function App() {
     
     const handlePrint = () => window.print();
 
-	const handleShare = (platform: 'telegram') => {
-        if (!generatedRecipe) return;
+	const handleShare = async () => {
+        const recipeElement = document.getElementById('recipe-to-share');
+        if (!recipeElement) return;
 
-        // 1. Собираем весь рецепт в одну большую текстовую переменную
-        // Используем Markdown для красивого форматирования в Telegram
-        const recipeTitle = `*${generatedRecipe.recipeName}*`;
-        const recipeDescription = `_${generatedRecipe.description}_`;
+        // --- Запасной вариант для Компьютера ---
+        // Если браузер не поддерживает функцию "Поделиться" (как на ПК),
+        // то просто вызываем сохранение в PDF.
+        if (!navigator.share) {
+            handlePrint();
+            return;
+        }
 
-        const ingredientsTitle = `\n*${t.ingredientsHeader}*`;
-        const ingredientsList = generatedRecipe.ingredients.map(item => `- ${item}`).join('\n');
+        // --- Основной вариант для Мобильных ---
+        try {
+            const canvas = await html2canvas(recipeElement, { scale: 2 });
 
-        const instructionsTitle = `\n*${t.instructionsHeader}*`;
-        const instructionsList = generatedRecipe.instructions.map((step, index) => `${index + 1}. ${step}`).join('\n');
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const file = new File([blob], 'recipe.png', { type: 'image/png' });
 
-        // 2. Объединяем все части с переносами строк
-        const fullRecipeText = [
-            recipeTitle,
-            recipeDescription,
-            ingredientsTitle,
-            ingredientsList,
-            instructionsTitle,
-            instructionsList
-        ].join('\n\n'); // Двойной перенос строки для разделения блоков
+            // Вызываем стандартное меню "Поделиться" на телефоне
+            await navigator.share({
+                title: generatedRecipe?.recipeName || 'Мой рецепт',
+                text: `${t.shareText} "${generatedRecipe?.recipeName}"`,
+                files: [file],
+            });
 
-        // 3. Кодируем текст для URL и создаем ссылку
-        const encodedText = encodeURIComponent(fullRecipeText);
-        const url = `https://t.me/share/url?text=${encodedText}`;
-
-        // 4. Открываем ссылку в новом окне
-        window.open(url, '_blank', 'noopener,noreferrer');
+        } catch (err) {
+            console.error('Ошибка при попытке поделиться:', err);
+            // Если что-то пошло не так, предлагаем сохранить PDF
+            handlePrint();
+        }
     };
 
     return (
@@ -318,7 +320,7 @@ export default function App() {
                     {error && <div className="text-center text-red-600 bg-red-100 p-4 rounded-md">{error}</div>}
 
                     {generatedRecipe && (
-                        <article className="bg-white p-6 md:p-8 rounded-lg shadow-lg border border-stone-200 print-container">
+                        <article id="recipe-to-share" className="bg-white p-6 md:p-8 rounded-lg shadow-lg border border-stone-200 print-container">
                             <h2 className="text-3xl md:text-4xl font-bold mb-2 text-stone-800">{generatedRecipe.recipeName}</h2>
                             <p className="text-stone-600 mb-6 italic">{generatedRecipe.description}</p>
                             
@@ -348,8 +350,10 @@ export default function App() {
                                 <div className="flex items-center gap-3">
                                     <span className="text-sm font-medium text-stone-600">{t.share}</span>
                                     <div className="flex gap-2">
-									  <button title={t.telegram} onClick={() => handleShare('telegram')} className="w-8 h-8 flex items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 transition"><ShareIcon platform="telegram"/></button>
-									</div>
+									  <button title={t.telegram} onClick={handleShare} className="w-8 h-8 flex items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 transition">
+										<ShareIcon platform="telegram"/>
+									  </button>
+								</div>
                                 </div>
                             </div>
                         </article>
