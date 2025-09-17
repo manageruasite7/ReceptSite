@@ -208,15 +208,16 @@ export default function App() {
             
             const recipeData = JSON.parse(textResponse.text) as Recipe;
 
-            const imageResponse = await ai.models.generateImages({
+            /*const imageResponse = await ai.models.generateImages({
                 model: 'imagen-4.0-generate-001',
                 prompt: recipeData.imagePrompt,
                 config: { numberOfImages: 1, aspectRatio: '4:3' }
             });
 
             const imageUrl = `data:image/png;base64,${imageResponse.generatedImages[0].image.imageBytes}`;
-            setGeneratedRecipe({ ...recipeData, imageUrl });
-
+            */
+			setGeneratedRecipe(recipeData); 
+			
         } catch (err) {
             console.error(err);
             setError(t.errorOccurred);
