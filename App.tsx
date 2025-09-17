@@ -35,7 +35,7 @@ const constants = {
       savePdf: 'Сохранить в PDF',
       share: 'Поделиться:',
       shareText: 'Смотрите, какой рецепт я сгенерировал!',
-	  telegram: 'Сохранить PDF файл для отправки в Telegram',
+	  telegram: 'Отправить в Telegram',
     },
     uk: {
       title: 'AI Генератор Рецептів',
@@ -63,7 +63,7 @@ const constants = {
       savePdf: 'Зберегти в PDF',
       share: 'Поділитися:',
       shareText: 'Дивіться, який рецепт я згенерував!',
-      telegram: 'Зберегти PDF файл для відправки в Telegram',
+      telegram: 'Надіслати в Telegram',
     },
   },
   mealTypes: {
@@ -229,31 +229,37 @@ export default function App() {
     
     const handlePrint = () => window.print();
 
-	/*
-	const handleShare = (platform: 'viber' | 'telegram' | 'whatsapp' | 'facebook') => {
+	const handleShare = (platform: 'telegram') => {
         if (!generatedRecipe) return;
-        
-        const pageUrl = window.location.href;
-        const shareText = encodeURIComponent(`${t.shareText} "${generatedRecipe.recipeName}"`);
-        const shareUrl = encodeURIComponent(pageUrl);
 
-        let url = '';
-        switch(platform) {
-            case 'viber':
-                url = `viber://forward?text=${shareText}%0A${shareUrl}`;
-                break;
-            case 'telegram':
-                url = `https://t.me/share/url?url=${shareUrl}&text=${shareText}`;
-                break;
-            case 'whatsapp':
-                url = `https://api.whatsapp.com/send?text=${shareText}%0A${shareUrl}`;
-                break;
-            case 'facebook':
-                url = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
-                break;
-        }
+        // 1. Собираем весь рецепт в одну большую текстовую переменную
+        // Используем Markdown для красивого форматирования в Telegram
+        const recipeTitle = `*${generatedRecipe.recipeName}*`;
+        const recipeDescription = `_${generatedRecipe.description}_`;
+
+        const ingredientsTitle = `\n*${t.ingredientsHeader}*`;
+        const ingredientsList = generatedRecipe.ingredients.map(item => `- ${item}`).join('\n');
+
+        const instructionsTitle = `\n*${t.instructionsHeader}*`;
+        const instructionsList = generatedRecipe.instructions.map((step, index) => `${index + 1}. ${step}`).join('\n');
+
+        // 2. Объединяем все части с переносами строк
+        const fullRecipeText = [
+            recipeTitle,
+            recipeDescription,
+            ingredientsTitle,
+            ingredientsList,
+            instructionsTitle,
+            instructionsList
+        ].join('\n\n'); // Двойной перенос строки для разделения блоков
+
+        // 3. Кодируем текст для URL и создаем ссылку
+        const encodedText = encodeURIComponent(fullRecipeText);
+        const url = `https://t.me/share/url?text=${encodedText}`;
+
+        // 4. Открываем ссылку в новом окне
         window.open(url, '_blank', 'noopener,noreferrer');
-    }; */
+    };
 
     return (
         <div className="min-h-screen container mx-auto px-4 py-8">
@@ -342,7 +348,7 @@ export default function App() {
                                 <div className="flex items-center gap-3">
                                     <span className="text-sm font-medium text-stone-600">{t.share}</span>
                                     <div className="flex gap-2">
-									  <button title={t.telegram} onClick={handlePrint} className="w-8 h-8 flex items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 transition"><ShareIcon platform="telegram"/></button>
+									  <button title={t.telegram} onClick={() => handleShare('telegram')} className="w-8 h-8 flex items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 transition"><ShareIcon platform="telegram"/></button>
 									</div>
                                 </div>
                             </div>
