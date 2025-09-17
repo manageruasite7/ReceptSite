@@ -35,10 +35,7 @@ const constants = {
       savePdf: 'Сохранить в PDF',
       share: 'Поделиться:',
       shareText: 'Смотрите, какой рецепт я сгенерировал!',
-      viber: 'Поделиться в Viber',
-      telegram: 'Поделиться в Telegram',
-      whatsapp: 'Поделиться в WhatsApp',
-      facebook: 'Поделиться в Facebook',
+	  telegram: 'Сохранить PDF файл для отправки в Telegram',
     },
     uk: {
       title: 'AI Генератор Рецептів',
@@ -66,10 +63,7 @@ const constants = {
       savePdf: 'Зберегти в PDF',
       share: 'Поділитися:',
       shareText: 'Дивіться, який рецепт я згенерував!',
-      viber: 'Поділитися в Viber',
-      telegram: 'Поділитися в Telegram',
-      whatsapp: 'Поділитися в WhatsApp',
-      facebook: 'Поділитися в Facebook',
+      telegram: 'Зберегти PDF файл для відправки в Telegram',
     },
   },
   mealTypes: {
@@ -235,7 +229,8 @@ export default function App() {
     
     const handlePrint = () => window.print();
 
-    const handleShare = (platform: 'viber' | 'telegram' | 'whatsapp' | 'facebook') => {
+	/*
+	const handleShare = (platform: 'viber' | 'telegram' | 'whatsapp' | 'facebook') => {
         if (!generatedRecipe) return;
         
         const pageUrl = window.location.href;
@@ -258,7 +253,7 @@ export default function App() {
                 break;
         }
         window.open(url, '_blank', 'noopener,noreferrer');
-    };
+    }; */
 
     return (
         <div className="min-h-screen container mx-auto px-4 py-8">
@@ -347,11 +342,8 @@ export default function App() {
                                 <div className="flex items-center gap-3">
                                     <span className="text-sm font-medium text-stone-600">{t.share}</span>
                                     <div className="flex gap-2">
-                                      <button title={t.viber} onClick={() => handleShare('viber')} className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-600 text-white hover:bg-purple-700 transition"><ShareIcon platform="viber"/></button>
-                                      <button title={t.telegram} onClick={() => handleShare('telegram')} className="w-8 h-8 flex items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 transition"><ShareIcon platform="telegram"/></button>
-                                      <button title={t.whatsapp} onClick={() => handleShare('whatsapp')} className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 transition"><ShareIcon platform="whatsapp"/></button>
-                                      <button title={t.facebook} onClick={() => handleShare('facebook')} className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-800 text-white hover:bg-blue-900 transition"><ShareIcon platform="facebook"/></button>
-                                    </div>
+									  <button title={t.telegram} onClick={handlePrint} className="w-8 h-8 flex items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 transition"><ShareIcon platform="telegram"/></button>
+									</div>
                                 </div>
                             </div>
                         </article>
