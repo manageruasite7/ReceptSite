@@ -1,0 +1,5 @@
+{
+  "name": "AI Recipe Generator",
+  "description": "A modern web application that generates unique recipes with step-by-step instructions and a photo of the dish, based on user preferences. Supports multiple languages, various food categories, cuisines, and meal types.",
+  "requestFramePermissions": []
+}
