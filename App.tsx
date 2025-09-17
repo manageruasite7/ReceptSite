@@ -244,7 +244,7 @@ export default function App() {
 
         // --- Основной вариант для Мобильных ---
         try {
-            const canvas = await html2canvas(recipeElement, { scale: 2 });
+            const canvas = await html2canvas(recipeElement, { scale: 3 });
 
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             const file = new File([blob], 'recipe.png', { type: 'image/png' });
